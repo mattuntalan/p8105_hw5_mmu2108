@@ -51,3 +51,19 @@ This "problem" focuses on structure of your submission, especially the use git a
 ```{r load_libraries}
 library(tidyverse)
 ```
+
+## Problem 2
+
+The raw dataset includes 12 variables: the individual's unique id number; homicide report date (listed as yyyymmdd); victim information such as first and last name, age, and sex; location of the homicide including coordinates; and status of the case.
+
+Create city_state variable and classify current disposition variable into solved/unsolved
+```{r status}
+homicide = 
+  read_csv("prob2_data/homicide-data.csv", na = c("", "Unknown")) %>%
+  mutate(
+    city_state = paste(city, state, sep=","),
+    status = case_when(
+        disposition == "Closed by arrest" ~ "Solved",
+        disposition == "Closed without arrest" ~ "Unsolved",
+        disposition == "Open/No arrest" ~ "Unsolved"))
+```
