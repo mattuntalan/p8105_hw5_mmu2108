@@ -95,3 +95,40 @@ broom::tidy(balt_prop) %>%
   select(estimate, conf.low, conf.high) %>%
   knitr::kable()
 ```
+
+The estimated proportion of homicides that are unsolved in Baltimore, MD is 64.556%.  We are 95% confident that the true proportion falls in between 62.756% and 66.316%.
+
+Unsolved Cases for All Cities
+```{r cities}
+prop_test_all = function(cities) {
+  city_tot =
+    cities %>%
+    summarize(
+      unsolved = sum(status == "Unsolved"),
+      n = n()
+    )
+  city_prop = 
+     prop.test(
+    x =
+      city_tot %>%
+      pull(unsolved),
+    n =
+      city_tot %>%
+      pull(n)
+  )
+  return(city_prop)
+}
+
+city_crime = 
+  homicide %>%
+  relocate(city_state) %>%
+  nest(data = uid:status) %>%
+  mutate(
+      results = map(data, prop_test_all),
+      results_tidy = map(results, broom::tidy)
+  ) %>%
+  select(city_state, results_tidy) %>%
+  unnest(results_tidy) %>%
+  select(city_state, estimate, conf.low, conf.high) %>%
+  janitor::clean_names()
+```
