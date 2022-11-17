@@ -171,3 +171,23 @@ mu_repeat_ttest =
   mutate(est_dataset = map(.x = mu, ~ estimate(mu = .x))) %>%
   unnest(est_dataset)
 ```
+
+Plot for Assessing Power in Part 1
+```{r power}
+power = 
+  mu_repeat_ttest %>%
+  group_by(mu) %>%
+  summarise(
+    rejectH0 = sum(p < 0.05),
+    count = n()
+  ) %>%
+  mutate(prop_rejectH0 = rejectH0/count) %>%
+  ggplot(aes(x = mu, y = prop_rejectH0)) + 
+  geom_point(alpha = 0.5) + 
+  geom_line(alpha = 0.5) +
+  labs(title = "Proportion of Null Hypothesis Rejection by True Mean",
+       x = "True Mean (mu)",
+       y = "Proportion of Null Hypothesis Rejections")
+```
+
+As the true mean and effect size increase, the power also increases.  By a true mean of 4, power nears 1.
