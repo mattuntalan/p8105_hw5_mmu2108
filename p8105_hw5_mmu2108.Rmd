@@ -191,3 +191,35 @@ power =
 ```
 
 As the true mean and effect size increase, the power also increases.  By a true mean of 4, power nears 1.
+
+Plots for Part 2
+```{r muplots}
+library(patchwork)
+
+mu_plot =
+  mu_repeat_ttest %>%
+  group_by(mu) %>%
+  mutate(avg_muhat = mean(mu_hat)) %>%
+  ggplot(aes(x = mu, y = avg_muhat)) +
+  geom_point() + 
+  geom_line(alpha = 0.5) + 
+  labs(title = "True Value of Mu vs. Average Estimated Value of Mu",
+       x = "True Mean Value",
+       y = "Average Estimate of Mean")
+
+mu_plot_reject =
+  mu_repeat_ttest %>%
+  filter(p < 0.05) %>%
+  group_by(mu) %>%
+  mutate(avg_muhat = mean(mu_hat)) %>%
+  ggplot(aes(x = mu, y = avg_muhat)) +
+  geom_point() + 
+  geom_line(alpha = 0.5) + 
+  labs(title = "True Value of Mu vs. Average Estimated Value of Mu",
+       x = "True Mean Value",
+       y = "Average Estimate of Mean")
+
+mu_plot + mu_plot_reject
+```
+
+When accounting for all estimated means, the average estimated mean appears to be equal to the true mean value.  However, when we only include samples for which the null hypothesis is rejected, at smaller true means, the average estimated mean tends to be an overestimate of the true mean.  The larger the true mean, the more closely the average estimated mean matches when only using samples that had rejected the null hypothesis.  Since larger mean values contribute to larger effect sizes when assessing the null hypothesis in a t-test, these larger mean values will benefit from higher power and thus a more accurate average estimate when only using samples that rejected the null.
