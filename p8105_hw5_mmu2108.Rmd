@@ -132,3 +132,18 @@ city_crime =
   select(city_state, estimate, conf.low, conf.high) %>%
   janitor::clean_names()
 ```
+
+Unsolved Homicides by City Plot
+```{r unsolved_plot}
+city_crime %>%
+  mutate(
+    city_state = fct_reorder(city_state, estimate)
+  ) %>%
+  ggplot(aes(x = city_state, y = estimate)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = conf_low, ymax = conf_high)) +
+  labs(title = "Estimated Proportion of Unsolved Cases per City",
+       x = "City",
+       y = "Estimated Proportion of Unsolved Cases") +
+  coord_flip()
+```
