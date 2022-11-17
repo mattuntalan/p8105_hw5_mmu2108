@@ -67,3 +67,31 @@ homicide =
         disposition == "Closed without arrest" ~ "Unsolved",
         disposition == "Open/No arrest" ~ "Unsolved"))
 ```
+
+Unsolved Cases for Baltimore
+```{r baltimore}
+balt = 
+  homicide %>%
+  filter(city_state == "Baltimore,MD")
+
+balt_sum =
+  balt %>%
+  summarize(
+    unsolved = sum(status == "Unsolved"),
+    n = n()
+  )
+
+balt_prop = 
+  prop.test(
+    x =
+      balt_sum %>%
+      pull(unsolved),
+    n =
+      balt_sum %>%
+      pull(n)
+  )
+
+broom::tidy(balt_prop) %>%
+  select(estimate, conf.low, conf.high) %>%
+  knitr::kable()
+```
