@@ -147,3 +147,27 @@ city_crime %>%
        y = "Estimated Proportion of Unsolved Cases") +
   coord_flip()
 ```
+
+## Problem 3
+
+Generate Datasets with Design Elements; Estimate Mu and P-value
+```{r ttest}
+mu0_datasets = map(1:5000, ~ rnorm(n = 30, mean = 0, sd = 5))
+
+estimate = function(n_obs = 30, mu, sigma = 5) {
+  x = rnorm(n = n_obs, mean = mu, sd = sigma)
+  tibble(mu_hat = mean(x),
+         p = t.test(x, mu = 0)$p.value
+         )
+}
+
+mu0_ttest = 
+  expand_grid(n = 30, mu = 0, sigma = 5, dataset = 1:5000) %>%
+  mutate(est_dataset = map(.x = mu, ~ estimate(mu = .x))) %>%
+  unnest(est_dataset)
+
+mu_repeat_ttest = 
+  expand_grid(n = 30, mu = c(1,2,3,4,5,6), sigma = 5, dataset = 1:5000) %>%
+  mutate(est_dataset = map(.x = mu, ~ estimate(mu = .x))) %>%
+  unnest(est_dataset)
+```
